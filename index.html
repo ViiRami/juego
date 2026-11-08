@@ -16,37 +16,36 @@
       --half: calc(var(--dice-size) / 2);
     }
 
-    /* EL CUERPO OCUPA EL 100% DEL MARCO Y ES TRANSPARENTE */
     body {
       margin: 0;
-      padding: 20px;
+      padding: 30px;
       width: 100vw;
       height: 100vh;
       box-sizing: border-box;
-      background-color: transparent; /* Fondo completamente transparente */
+      background-color: transparent; /* Fondo transparente para InDesign */
       color: var(--text-color);
       font-family: 'Quicksand', Arial, Helvetica, sans-serif;
       
-      /* Distribución: Dado a la izquierda, tablero a la derecha */
       display: flex;
       flex-direction: row; 
       align-items: center;
-      justify-content: space-between;
-      overflow: hidden; /* Evita que salgan barras de scroll en InDesign */
+      justify-content: flex-start;
+      gap: 40px;
+      overflow: hidden; 
     }
 
-    /* PANEL DEL DADO (A LA IZQUIERDA) */
+    /* PANEL DEL DADO (Izquierda, tamaño fijo) */
     .dice-panel {
-      flex: 0 0 250px; /* Ancho fijo para el panel del dado */
+      flex: 0 0 250px;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 20px;
       text-align: center;
-      /* Fondo semi-transparente muy suave para que el texto se lea si hay algo detrás en InDesign */
-      background: rgba(255, 255, 255, 0.6); 
+      background: rgba(255, 255, 255, 0.7); 
       padding: 30px;
       border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
       z-index: 20;
     }
 
@@ -69,37 +68,32 @@
     .roll-button:hover { background: var(--btn-hover); transform: translateY(-3px); }
     .roll-button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-    /* CONTENEDOR FLEXIBLE PARA EL TABLERO (A LA DERECHA) */
-    .board-wrapper {
-      flex: 1; /* Toma todo el espacio sobrante a la derecha */
-      height: 100%; /* Toma el 100% de la altura de la pantalla/marco */
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding-left: 20px;
-    }
-
-    /* EL TABLERO INTERNO CON PROPORCIÓN EXACTA CERO DEFORMACIÓN */
-    .board-inner {
-      position: relative;
-      height: 100%; /* Ajusta la altura al máximo permitido por el marco de InDesign */
-      max-width: 100%; 
-      aspect-ratio: 1920 / 4000; /* Obliga a mantener las medidas de tu imagen */
-    }
-
-    /* IMAGEN DEL TABLERO */
-    .board-img {
-      width: 100%;
+    /* LA "CÁMARA" (Derecha, ocupa todo el espacio sobrante) */
+    .board-window {
+      flex: 1;
       height: 100%;
-      display: block;
-      object-fit: contain; /* Nunca se deforma */
+      position: relative;
+      overflow: hidden; /* Oculta todo el lienzo transparente que no nos interesa */
+      border-radius: 15px;
     }
 
-    /* LA FICHA (CONEJO MÁS GRANDE) */
+    /* EL LIENZO GIGANTE ORIGINAL */
+    .board-giant {
+      position: absolute;
+      width: 1920px;
+      height: 4000px;
+      background: url('index.png') no-repeat top left;
+      background-size: 100% 100%;
+      transform-origin: 0 0;
+      will-change: transform;
+    }
+
+    /* EL CONEJO (Ahora respeta las coordenadas absolutas) */
     .token {
       position: absolute;
-      width: 20%; /* ¡El doble de grande que antes! Si lo quieres aún más grande cambia este número a 25% */
-      aspect-ratio: 1 / 1;
+      /* Como la imagen de fondo es de 1920x4000, 180px aquí es un tamaño excelente. Se escalará junto con el tablero. */
+      width: 180px; 
+      height: 180px;
       background: url('conejo.png') no-repeat center/contain;
       transform: translate(-50%, -50%); 
       transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -109,7 +103,7 @@
 </head>
 <body>
 
-  <!-- Panel del Dado (Izquierda) -->
+  <!-- Panel del Dado -->
   <div class="dice-panel">
     <h1>¡Lanza el dado!</h1>
     <div class="stage" id="stage">
@@ -119,12 +113,9 @@
     <div id="result" style="font-size: 1.2rem; margin-top: 10px;"><strong>Resultado:</strong> <span id="res-num">-</span></div>
   </div>
 
-  <!-- Tablero (Derecha) -->
-  <div class="board-wrapper">
-    <div class="board-inner" id="board">
-      <!-- Insertamos el tablero como imagen real para evitar que CSS lo deforme -->
-      <img src="index.png" class="board-img" alt="Tablero de juego">
-      <!-- Ficha del conejo -->
+  <!-- Tablero y Cámara -->
+  <div class="board-window" id="window">
+    <div class="board-giant" id="giant">
       <div class="token" id="token"></div>
     </div>
   </div>
@@ -144,7 +135,7 @@
       die.appendChild(face);
     }
 
-    // 2. COORDENADAS EXACTAS
+    // 2. TUS COORDENADAS ORIGINALES
     const pathCoordinates = [
       { x: 1028, y: 3256 },
       { x: 1298, y: 3123 },
@@ -163,22 +154,49 @@
     let currentPosition = 0;
     const token = document.getElementById('token');
 
-    // CONVERTIR COORDENADAS EN PORCENTAJES SOBRE EL NUEVO MARCO
-    function moveTokenToIndex(index) {
-      const boardWidth = 1920;
-      const boardHeight = 4000;
-      
-      const xPercent = (pathCoordinates[index].x / boardWidth) * 100;
-      const yPercent = (pathCoordinates[index].y / boardHeight) * 100;
-
-      token.style.left = xPercent + '%';
-      token.style.top = yPercent + '%';
+    // Mover el conejo con tus coordenadas directas
+    function updateTokenPosition() {
+      token.style.left = pathCoordinates[currentPosition].x + 'px';
+      token.style.top = pathCoordinates[currentPosition].y + 'px';
     }
+    updateTokenPosition(); // Ubicar al iniciar
 
-    // Ubica al conejo al iniciar
-    moveTokenToIndex(0);
+    // 3. MOTOR DE CÁMARA INTELIGENTE (ZOOM AL TABLERO)
+    function focusCamera() {
+      const windowEl = document.getElementById('window');
+      const giantEl = document.getElementById('giant');
+      
+      // Tamaño disponible en pantalla (el recuadro derecho)
+      const winW = windowEl.clientWidth;
+      const winH = windowEl.clientHeight;
 
-    // 3. LÓGICA DEL DADO
+      // El área exacta (bounding box) donde está tu camino dibujado
+      const cameraW = 1300; // Ancho a enfocar
+      const cameraH = 1000; // Alto a enfocar
+      const cameraX = 600;  // Empieza a recortar desde X
+      const cameraY = 2350; // Empieza a recortar desde Y
+
+      // Calcula qué tanto zoom debe hacer para llenar la pantalla
+      const scale = Math.min(winW / cameraW, winH / cameraH);
+
+      // Centra el recorte visualmente
+      const scaledCameraW = cameraW * scale;
+      const scaledCameraH = cameraH * scale;
+      const xOffset = (winW - scaledCameraW) / 2;
+      const yOffset = (winH - scaledCameraH) / 2;
+
+      const transX = xOffset - (cameraX * scale);
+      const transY = yOffset - (cameraY * scale);
+
+      // Aplica el zoom mágico al lienzo
+      giantEl.style.transform = `translate(${transX}px, ${transY}px) scale(${scale})`;
+    }
+    
+    // Activa la cámara al abrir y si cambias el tamaño de la ventana
+    window.addEventListener('resize', focusCamera);
+    focusCamera();
+
+    // 4. LÓGICA DEL JUEGO
     const angles = {1:[0,0], 2:[270,0], 3:[0,270], 4:[0,90], 5:[90,0], 6:[0,180]};
     let last = 1, xTurns = 0, yTurns = 0, rolling = false;
 
@@ -188,7 +206,7 @@
       // Reinicio
       if (currentPosition >= pathCoordinates.length - 1) {
         currentPosition = 0;
-        moveTokenToIndex(0);
+        updateTokenPosition();
         document.getElementById('res-num').innerText = "-";
         document.getElementById('roll').innerText = "Lanzar dado";
         return; 
@@ -217,7 +235,7 @@
             currentPosition = pathCoordinates.length - 1; 
           }
           
-          moveTokenToIndex(currentPosition);
+          updateTokenPosition();
 
           if (currentPosition === pathCoordinates.length - 1) {
              document.getElementById('roll').innerText = "Volver a jugar";
