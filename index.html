@@ -9,7 +9,6 @@
   
   <style>
     :root {
-      --bg-color: #fff3e3;
       --btn-color: #BD95E8;
       --btn-hover: #a87cd5;
       --text-color: #292d31;
@@ -17,40 +16,37 @@
       --half: calc(var(--dice-size) / 2);
     }
 
+    /* EL CUERPO OCUPA EL 100% DEL MARCO Y ES TRANSPARENTE */
     body {
       margin: 0;
-      min-height: 100svh;
-      background-color: var(--bg-color);
+      padding: 20px;
+      width: 100vw;
+      height: 100vh;
+      box-sizing: border-box;
+      background-color: transparent; /* Fondo completamente transparente */
       color: var(--text-color);
       font-family: 'Quicksand', Arial, Helvetica, sans-serif;
-      padding: 40px 20px;
-    }
-
-    /* CONTENEDOR PRINCIPAL QUE SEPARA EL DADO DEL TABLERO */
-    .game-container {
+      
+      /* Distribución: Dado a la izquierda, tablero a la derecha */
       display: flex;
-      flex-wrap: wrap; /* En celulares se pone uno debajo del otro, en PC lado a lado */
-      justify-content: center;
-      align-items: flex-start;
-      gap: 60px;
-      max-width: 1200px;
-      margin: 0 auto;
+      flex-direction: row; 
+      align-items: center;
+      justify-content: space-between;
+      overflow: hidden; /* Evita que salgan barras de scroll en InDesign */
     }
 
-    /* PANEL DEL DADO */
+    /* PANEL DEL DADO (A LA IZQUIERDA) */
     .dice-panel {
+      flex: 0 0 250px; /* Ancho fijo para el panel del dado */
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 20px;
       text-align: center;
-      width: 250px;
-      background: #ffffffaa;
+      /* Fondo semi-transparente muy suave para que el texto se lea si hay algo detrás en InDesign */
+      background: rgba(255, 255, 255, 0.6); 
       padding: 30px;
       border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-      position: sticky;
-      top: 40px;
       z-index: 20;
     }
 
@@ -73,23 +69,37 @@
     .roll-button:hover { background: var(--btn-hover); transform: translateY(-3px); }
     .roll-button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-    /* NUEVO TABLERO INTELIGENTE (RESPONSIVO) */
-    .board-container {
-      position: relative;
-      width: 100%;
-      max-width: 600px; /* Tamaño máximo para que se vea bien en PC */
-      /* Esto mantiene la proporción exacta de tu lienzo (1920x4000) sin importar la pantalla */
-      aspect-ratio: 1920 / 4000; 
-      background: url('index.png') no-repeat top left; 
-      background-size: cover;
-      border-radius: 10px;
+    /* CONTENEDOR FLEXIBLE PARA EL TABLERO (A LA DERECHA) */
+    .board-wrapper {
+      flex: 1; /* Toma todo el espacio sobrante a la derecha */
+      height: 100%; /* Toma el 100% de la altura de la pantalla/marco */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding-left: 20px;
     }
 
-    /* EL CONEJO SE ADAPTA AL TABLERO */
+    /* EL TABLERO INTERNO CON PROPORCIÓN EXACTA CERO DEFORMACIÓN */
+    .board-inner {
+      position: relative;
+      height: 100%; /* Ajusta la altura al máximo permitido por el marco de InDesign */
+      max-width: 100%; 
+      aspect-ratio: 1920 / 4000; /* Obliga a mantener las medidas de tu imagen */
+    }
+
+    /* IMAGEN DEL TABLERO */
+    .board-img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: contain; /* Nunca se deforma */
+    }
+
+    /* LA FICHA (CONEJO MÁS GRANDE) */
     .token {
       position: absolute;
-      width: 10%; /* El conejo siempre medirá el 10% del ancho del tablero */
-      aspect-ratio: 1 / 1; /* Mantiene al conejo cuadrado y perfecto */
+      width: 20%; /* ¡El doble de grande que antes! Si lo quieres aún más grande cambia este número a 25% */
+      aspect-ratio: 1 / 1;
       background: url('conejo.png') no-repeat center/contain;
       transform: translate(-50%, -50%); 
       transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -99,19 +109,22 @@
 </head>
 <body>
 
-  <div class="game-container">
-    <!-- Panel del Dado -->
-    <div class="dice-panel">
-      <h1>¡Lanza el dado!</h1>
-      <div class="stage" id="stage">
-        <div class="die" id="die"></div>
-      </div>
-      <button class="roll-button" id="roll" type="button">Lanzar dado</button>
-      <div id="result" style="font-size: 1.2rem; margin-top: 10px;"><strong>Resultado:</strong> <span id="res-num">-</span></div>
+  <!-- Panel del Dado (Izquierda) -->
+  <div class="dice-panel">
+    <h1>¡Lanza el dado!</h1>
+    <div class="stage" id="stage">
+      <div class="die" id="die"></div>
     </div>
+    <button class="roll-button" id="roll" type="button">Lanzar dado</button>
+    <div id="result" style="font-size: 1.2rem; margin-top: 10px;"><strong>Resultado:</strong> <span id="res-num">-</span></div>
+  </div>
 
-    <!-- Tablero -->
-    <div class="board-container" id="board">
+  <!-- Tablero (Derecha) -->
+  <div class="board-wrapper">
+    <div class="board-inner" id="board">
+      <!-- Insertamos el tablero como imagen real para evitar que CSS lo deforme -->
+      <img src="index.png" class="board-img" alt="Tablero de juego">
+      <!-- Ficha del conejo -->
       <div class="token" id="token"></div>
     </div>
   </div>
@@ -131,7 +144,7 @@
       die.appendChild(face);
     }
 
-    // 2. TUS COORDENADAS EXACTAS
+    // 2. COORDENADAS EXACTAS
     const pathCoordinates = [
       { x: 1028, y: 3256 },
       { x: 1298, y: 3123 },
@@ -150,12 +163,11 @@
     let currentPosition = 0;
     const token = document.getElementById('token');
 
-    // ESTA FUNCIÓN CONVIERTE TUS COORDENADAS EN PORCENTAJES MÁGICAMENTE
+    // CONVERTIR COORDENADAS EN PORCENTAJES SOBRE EL NUEVO MARCO
     function moveTokenToIndex(index) {
       const boardWidth = 1920;
       const boardHeight = 4000;
       
-      // Regla de tres simple para saber qué porcentaje de la imagen es X y Y
       const xPercent = (pathCoordinates[index].x / boardWidth) * 100;
       const yPercent = (pathCoordinates[index].y / boardHeight) * 100;
 
@@ -163,17 +175,17 @@
       token.style.top = yPercent + '%';
     }
 
-    // Ubica al conejo en la casilla de salida al iniciar
+    // Ubica al conejo al iniciar
     moveTokenToIndex(0);
 
-    // 3. LÓGICA DEL JUEGO
+    // 3. LÓGICA DEL DADO
     const angles = {1:[0,0], 2:[270,0], 3:[0,270], 4:[0,90], 5:[90,0], 6:[0,180]};
     let last = 1, xTurns = 0, yTurns = 0, rolling = false;
 
     function roll() {
       if (rolling) return;
       
-      // Si el conejo llegó al final, reiniciamos el tablero
+      // Reinicio
       if (currentPosition >= pathCoordinates.length - 1) {
         currentPosition = 0;
         moveTokenToIndex(0);
@@ -185,7 +197,6 @@
       rolling = true; 
       document.getElementById('roll').disabled = true;
 
-      // Calcular número aleatorio para el dado
       let next = Math.floor(Math.random() * 5) + 1;
       if (next >= last) next++;
       const [x, y] = angles[next];
@@ -206,7 +217,6 @@
             currentPosition = pathCoordinates.length - 1; 
           }
           
-          // Mover al conejo a su nueva posición
           moveTokenToIndex(currentPosition);
 
           if (currentPosition === pathCoordinates.length - 1) {
