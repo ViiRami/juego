@@ -6,16 +6,15 @@
   <title>Tablero Interactivo</title>
   
   <!-- ✍️ TIPOGRAFÍA PASO 1: Si quieres usar otra fuente distinta a Quicksand (ej. Roboto, Montserrat), 
-       debes cambiar este enlace de Google Fonts por el de tu nueva fuente. -->
+        debes cambiar este enlace de Google Fonts por el de tu nueva fuente. -->
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
   
   <style>
     :root {
       /* 🎨 COLORES PRINCIPALES DEL JUEGO */
-      /* Cambia el código HEX (#) por el que prefieras */
-      --btn-color: #c0e0d0;   /* 🎨 Color de fondo del botón principal y bordes de opciones */
-      --btn-hover: #99b3a6;   /* 🎨 Color del botón al pasar el mouse por encima */
-      --text-color: #837456;  /* 🎨 Color general de los textos en todo el juego */
+      --btn-color: #c0e0d0;   
+      --btn-hover: #99b3a6;   
+      --text-color: #837456;  
       
       --dice-size: 120px;
       --half: calc(var(--dice-size) / 2);
@@ -28,19 +27,15 @@
       height: 100vh;
       box-sizing: border-box;
       
-      /* 🎨 FONDO DEL JUEGO: Actualmente es transparente para que se vea el fondo de InDesign */
       background-color: transparent; 
-      
       color: var(--text-color);
-      
-      /* ✍️ TIPOGRAFÍA PASO 2: Escribe aquí el nombre de tu tipografía (debe coincidir con la de Google Fonts) */
       font-family: 'Quicksand', Arial, Helvetica, sans-serif;
       
       display: flex;
       flex-direction: row; 
       align-items: center;
       justify-content: flex-start;
-      gap: 30px;
+      gap: 5px; 
       overflow: hidden; 
     }
 
@@ -52,12 +47,9 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 20px;
+      gap: 15px;
       text-align: center;
-      
-      /* 🎨 FONDO DEL PANEL DEL DADO (La cajita donde está el dado) */
       background: #fff3e4; 
-      
       padding: 30px;
       border-radius: 20px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.05);
@@ -75,21 +67,13 @@
     .face { 
       position: absolute; 
       inset: 0; 
-      
-      /* 🎨 COLOR DEL BORDE DEL DADO (Actualmente gris claro) */
       border: 2px solid #ebb3b7; 
-      
       border-radius: 19%; 
       display: grid; 
       grid-template-columns: repeat(3, 1fr); 
       padding: 17%; 
-      
-      /* 🎨 COLOR DE FONDO DE LAS CARAS DEL DADO (Actualmente blanco) */
       background: #778c78; 
-      
-      /* 🎨 COLOR DE LA SOMBRA INTERIOR DEL DADO (Para darle volumen) */
       box-shadow: inset -5px -5px 10px #aaa9a926; 
-      
       backface-visibility: hidden; 
     }
     
@@ -106,8 +90,6 @@
       border-radius: 50%; 
       align-self: center; 
       justify-self: center; 
-      
-      /* 🎨 COLOR DE LOS PUNTOS DEL DADO (Actualmente gris oscuro) */
       background: #fff3e4; 
     }
     
@@ -115,18 +97,10 @@
        BOTÓN "LANZAR DADO"
        ========================================= */
     .roll-button { 
-      /* El fondo ya toma el color de --btn-color */
       background: var(--btn-color); 
-      
-      /* 🎨 COLOR DEL TEXTO DENTRO DEL BOTÓN (Actualmente blanco) */
       color: #837456; 
-      
-      /* ✍️ TIPOGRAFÍA DEL BOTÓN */
       font-family: 'Quicksand', sans-serif; 
-      
       font-weight: 700; font-size: 1.1rem; border: none; border-radius: 50px; padding: 15px 35px; cursor: pointer; transition: background 0.2s, transform 0.1s; 
-      
-      /* 🎨 COLOR DE LA SOMBRA DEL BOTÓN (Aquí hay un color lila en formato RGBA, si quieres puedes borrar esta línea o poner un tono verde/crema) */
       box-shadow: 0 4px 15px #accabb; 
     }
     .roll-button:hover { background: var(--btn-hover); transform: translateY(-3px); }
@@ -171,8 +145,8 @@
       position: fixed;
       top: 0; left: 0; width: 100vw; height: 100vh;
       
-      /* 🎨 COLOR DEL FONDO OSCURO QUE TAPA EL JUEGO AL SALIR UNA PREGUNTA (Negro al 60%) */
-  background: radial-gradient(circle at center, #fff3e3 0%, #778c78 80%);
+      /* El fondo que cubre todo ahora es un degradado dinámico controlado por JS */
+      background: radial-gradient(circle at center, #fff3e3 0%, #778c78 80%);
       
       display: flex;
       justify-content: center;
@@ -188,7 +162,7 @@
     }
 
     .modal-box {
-      /* 🎨 COLOR DE FONDO DE LA TARJETA DE PREGUNTA (Actualmente un cremita) */
+      /* Fondo sólido del recuadro de la pregunta (controlado por cada pregunta en JS) */
       background: #fff3e4; 
       
       padding: 40px;
@@ -205,21 +179,21 @@
       display: flex; 
     }
 
-    .question-title { font-size: 1.5rem; font-weight: 700; margin: 0; }
+    .question-title { 
+      font-size: 1.5rem; 
+      font-weight: 700; 
+      margin: 0; 
+      /* Color del título independiente configurado vía JS */
+    } 
+
     .options-container { display: flex; flex-direction: column; gap: 12px; }
     
     /* BOTONES DE RESPUESTA (OPCIONES A, B, C) */
     .option-btn {
-      /* 🎨 COLOR DE FONDO DEL BOTÓN DE RESPUESTA (Actualmente blanco) */
       background: #9bac92; 
-      
-      /* El borde y el texto toman los colores de --btn-color y --text-color definidos arriba */
       border: 2px solid var(--btn-color);
       color: var(--text-color);
-      
-      /* ✍️ TIPOGRAFÍA DE LOS BOTONES DE RESPUESTA */
       font-family: 'Quicksand', sans-serif; 
-      
       font-size: 1.1rem;
       font-weight: 600;
       padding: 12px 20px;
@@ -228,7 +202,6 @@
       transition: all 0.2s ease;
     }
     
-    /* COLOR CUANDO EL MOUSE PASA POR ENCIMA DE UNA OPCIÓN */
     .option-btn:hover { 
       background: var(--btn-color); 
       color: #6d7866; 
@@ -299,6 +272,12 @@
 
     // ==========================================
     // 2. DATOS DEL TABLERO Y LAS PREGUNTAS
+    // Aquí puedes cambiar de forma independiente:
+    // - overlayBg: Degradado de fondo que cubre toda la pantalla
+    // - modalBg: Color SÓLIDO del recuadro de la pregunta
+    // - titleColor: Color del título de la pregunta
+    // - textColor: Color del texto de las opciones y general del cuadro
+    // - btnBg: Color de fondo de los botones de opción
     // ==========================================
     const pathCoordinates = [
       { x: 1028, y: 3256 }, { x: 1298, y: 3123 }, { x: 1765, y: 3082 },
@@ -308,12 +287,125 @@
     ];
 
     const questionsData = [
-      null, 
-      { pregunta: "¿Qué color se obtiene mezclando azul y amarillo?", opciones: ["Verde", "Naranja", "Morado"], correctIndex: 0 }, 
-      { pregunta: "¿Cuál es la tipografía que estamos usando en este juego?", opciones: ["Arial", "Quicksand", "Times New Roman"], correctIndex: 1 }, 
-      null, 
-      { pregunta: "¿Qué herramienta sirve para recortar fondos en Photoshop?", opciones: ["Pincel", "Texto", "Pluma"], correctIndex: 2 }, 
-      null, null, null, null, null, null, null  
+      null, // Casilla 0: (Punto de partida) No pasa nada.
+      
+      // Casilla 1: 
+      { 
+        pregunta: "¿Qué características hacen que los peces sean útiles para la investigación?", 
+        opciones: ["Son animales de gran tamaño, vidas muy largas y costosos de mantener.", "Son pequeños, tienen vidas cortas, ponen huevos transparentes y ayudan a estudiar la regeneración cardíaca.", "Su sistema circulatorio es idéntico al de los mamíferos terrestres y no se pueden reproducir en laboratorios."], 
+        correctIndex: 1,
+        overlayBg: "radial-gradient(circle at center, #fff3e3 0%, #c0e0d0 80%)", // 🎨 Degradado de fondo general
+        modalBg: "#c0e0d0",       // 🎨 Color SÓLIDO del cuadro modal
+        titleColor: "#837456",    // 🎨 Color del título de la pregunta
+        textColor: "#837456",     // 🎨 Color del texto de las opciones
+        btnBg: "#99b3a6"          // 🎨 Color de fondo de los botones
+      }, 
+      
+      // Casilla 2:
+      { 
+        pregunta: "¿Qué prohíbe estrictamente la Ley 2047 de 2020 en Colombia respecto a los productos cosméticos?", 
+        opciones: ["La prohibición total de fabricar cualquier tipo de medicamento o vacuna utilizando animales.", "Únicamente la comercialización de productos importados desde el continente africano.", "Realizar ensayos en animales de productos cosméticos terminados, ingredientes o mezclas, así como importar, fabricar o comercializarlos."], 
+        correctIndex: 2,
+        overlayBg: "radial-gradient(circle at center, #e2f0d9 0%, #778c77 80%)",
+        modalBg: "#778c77",
+        titleColor: "#fff3e4",
+        textColor: "#fff3e4",
+        btnBg: "#5f7868"
+      }, 
+      
+      { 
+        pregunta: "¿Cuáles son algunos de los sellos oficiales internacionalmente reconocidos que debes buscar?", 
+        opciones: ["Peta, Leaping Bunny, Cruelty Free Europe y el sello de Te Protejo.", "Cualquier logotipo que tenga la silueta de un perro o un gato impreso en color negro.", "El sello de calidad ISO 9001, marcas de origen nacional y etiquetas de precio ecológico."], 
+        correctIndex: 0,
+        overlayBg: "radial-gradient(circle at center, #fce4d6 0%, #ebb3b7 80%)",
+        modalBg: "#ebb3b7",
+        titleColor: "#837556",
+        textColor: "#837556",
+        btnBg: "#d4a1a5"
+      }, 
+      
+      // Casilla 4:
+      { 
+        pregunta: "Dentro de las alternativas éticas que reemplazan el uso de animales, ¿a qué hace referencia el método In Silico?", 
+        opciones: ["A modelos computacionales y simulaciones por software.", "A cultivos celulares humanos en placas de laboratorio.", "A un ensayo visual realizado en membranas corioalantoideas."], 
+        correctIndex: 0,
+        overlayBg: "radial-gradient(circle at center, #deebf7 0%, #837556 80%)",
+        modalBg: "#837556",
+        titleColor: "#fff3e4",
+        textColor: "#fff3e4",
+        btnBg: "#9c9078"
+      }, 
+      
+      { 
+        pregunta: "Para verificar de forma segura si una marca de cosméticos o cuidado personal es realmente cruelty-free:", 
+        opciones: ["Confiar únicamente en la publicidad de televisión y redes sociales.", "Revisar que el empaque sea de color verde pastel.", "Utilizar buscadores oficiales como Te Protejo o Peta."], 
+        correctIndex: 2,
+        overlayBg: "radial-gradient(circle at center, #fff3e3 0%, #c0e0d0 80%)", // 🎨 Degradado de fondo general
+        modalBg: "#c0e0d0",       // 🎨 Color SÓLIDO del cuadro modal
+        titleColor: "#837456",    // 🎨 Color del título de la pregunta
+        textColor: "#837456",     // 🎨 Color del texto de las opciones
+        btnBg: "#99b3a6" 
+      }, // Casilla 5
+      { 
+        pregunta: "¿A qué tipo de prueba de laboratorio son expuestos los peces?", 
+        opciones: ["Pruebas de toxicidad ambiental.", "Pruebas de resistencia textil.", "Ensayos exclusivos de nutrición marina."], 
+        correctIndex: 0,
+        overlayBg: "radial-gradient(circle at center, #e2f0d9 0%, #778c77 80%)",
+        modalBg: "#778c77",
+        titleColor: "#fff3e4",
+        textColor: "#fff3e4",
+        btnBg: "#5f7868"
+      }, // Casilla 6
+      { 
+        pregunta: "¿Qué implican el procedimiento de modificación genética e inyección en embriones?", 
+        opciones: ["Modificar la dieta diaria de los peces en estanques comerciales.", "Alterar el material genético e introducir sustancias o vectores en las etapas embrionarias tempranas.", "Evaluar únicamente el crecimiento físico de los peces en agua dulce."], 
+        correctIndex: 1,
+       overlayBg: "radial-gradient(circle at center, #fce4d6 0%, #ebb3b7 80%)",
+        modalBg: "#ebb3b7",
+        titleColor: "#837556",
+        textColor: "#837556",
+        btnBg: "#d4a1a5"
+      }, // Casilla 7
+      { 
+        pregunta: "¿Qué evalúan generalmente los procedimientos de toxicidad subcrónica y crónica en animales?", 
+        opciones: ["Los efectos adversos provocados por la exposición prolongada o repetida a una sustancia durante gran parte de su ciclo de vida.", "La velocidad con la que pueden correr en superficies planas.", "La cantidad de alimento que consumen al día sin alterar su peso."], 
+        correctIndex: 0,
+        overlayBg: "radial-gradient(circle at center, #fce4d6 0%, #ebb3b7 80%)",
+        modalBg: "#ebb3b7",
+        titleColor: "#837556",
+        textColor: "#837556",
+        btnBg: "#afbda8"
+      }, // Casilla 8
+      { 
+        pregunta: "¿Por qué es importante compartir información cruelty-free?", 
+        opciones: ["Reemplazar por completo la necesidad de tener sellos oficiales en los empaques.", "Vender productos de maquillaje importado de forma directa.", "Fomentar la educación, concientizar a más jóvenes sobre la Ley 2047 y promover el uso de alternativas libres de crueldad."], 
+        correctIndex: 2,
+       overlayBg: "radial-gradient(circle at center, #fff3e3 0%, #c0e0d0 80%)", // 🎨 Degradado de fondo general
+        modalBg: "#c0e0d0",       // 🎨 Color SÓLIDO del cuadro modal
+        titleColor: "#837456",    // 🎨 Color del título de la pregunta
+        textColor: "#837456",     // 🎨 Color del texto de las opciones
+        btnBg: "#99b3a6"  
+      }, // Casilla 9
+      { 
+        pregunta: "¿Qué aspecto fundamental estableció la Ley 84 de 1989 en Colombia?", 
+        opciones: ["La creación de multas exclusivamente para zoológicos y circos ambulantes.", "Que los animales pasaron a tener en todo el territorio nacional especial protección contra el sufrimiento y el dolor causados por el hombre.", "La prohibición inmediata de importar cosméticos de Europa y Asia."], 
+        correctIndex: 1,
+        overlayBg: "radial-gradient(circle at center, #e2f0d9 0%, #778c77 80%)",
+        modalBg: "#778c77",
+        titleColor: "#fff3e4",
+        textColor: "#fff3e4",
+        btnBg: "#5f7868"
+      }, // Casilla 10
+      { 
+        pregunta: "¿Qué cambio histórico introdujo la Ley 1774 de 2016?", 
+        opciones: ["Los reconoció legalmente como seres sintientes, estableciendo penas de prisión para castigar los actos de crueldad y maltrato.", "Autorizó el uso de animales en laboratorios de cosmética bajo supervisión policial.", "Los catalogó estrictamente como bienes muebles de propiedad familiar."], 
+        correctIndex: 0,
+        overlayBg: "radial-gradient(circle at center, #fce4d6 0%, #ebb3b7 80%)",
+        modalBg: "#ebb3b7",
+        titleColor: "#837556",
+        textColor: "#837556",
+        btnBg: "#d4a1a5"
+      },   // Casilla 11 (Final)
     ];
 
     let currentPosition = 0;
@@ -361,16 +453,29 @@
       optionsContainer.innerHTML = '';
       questionText.innerText = qData.pregunta;
 
+      // Aplicar colores y fondos personalizados por pregunta
+      const currentOverlayBg = qData.overlayBg || 'radial-gradient(circle at center, #fff3e3 0%, #778c78 80%)';
+      const currentModalBg = qData.modalBg || '#fff3e4';
+      const currentTitleColor = qData.titleColor || '#6d5b3d';
+      const currentTextColor = qData.textColor || '#837456';
+      const currentBtnBg = qData.btnBg || '#9bac92';
+
+      modalOverlay.style.background = currentOverlayBg;
+      questionModal.style.background = currentModalBg;
+      questionText.style.color = currentTitleColor;
+
       qData.opciones.forEach((opcionText, index) => {
         const btn = document.createElement('button');
         btn.className = 'option-btn';
         btn.innerText = opcionText;
+        btn.style.background = currentBtnBg;
+        btn.style.color = currentTextColor;
         
         btn.onclick = () => {
           if (index === qData.correctIndex) {
-            showFeedback('tarjeta_Correcto.png');
+            showFeedback('tarjeta_Correcto.png', currentOverlayBg, currentModalBg, currentTextColor);
           } else {
-            showFeedback('tarjeta_Incorrecto.png');
+            showFeedback('tarjeta_Incorrecto.png', currentOverlayBg, currentModalBg, currentTextColor);
           }
         };
         optionsContainer.appendChild(btn);
@@ -381,8 +486,11 @@
       modalOverlay.classList.add('active');
     }
 
-    function showFeedback(imageName) {
+    function showFeedback(imageName, overlayBgColor, modalBgColor, modalTextColor) {
       questionModal.classList.remove('active');
+      modalOverlay.style.background = overlayBgColor;
+      feedbackModal.style.background = modalBgColor;
+      feedbackModal.style.color = modalTextColor;
       feedbackModal.classList.add('active');
       feedbackImage.src = imageName;
     }
