@@ -13,7 +13,6 @@
       --btn-color: #BD95E8;
       --btn-hover: #a87cd5;
       --text-color: #292d31;
-      
       --dice-size: 120px;
       --half: calc(var(--dice-size) / 2);
     }
@@ -21,18 +20,24 @@
     body {
       margin: 0;
       min-height: 100svh;
-      display: flex;
-      flex-wrap: wrap; /* Permite que se acomoden lado a lado o arriba/abajo en celulares */
-      justify-content: center;
-      align-items: flex-start; 
-      gap: 60px; /* Separación clara entre el dado y el tablero */
-      padding: 40px 24px;
       background-color: var(--bg-color);
       color: var(--text-color);
       font-family: 'Quicksand', Arial, Helvetica, sans-serif;
+      padding: 40px 20px;
     }
 
-    /* CONTENEDOR DEL DADO */
+    /* CONTENEDOR PRINCIPAL QUE SEPARA EL DADO DEL TABLERO */
+    .game-container {
+      display: flex;
+      flex-wrap: wrap; /* En celulares se pone uno debajo del otro, en PC lado a lado */
+      justify-content: center;
+      align-items: flex-start;
+      gap: 60px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* PANEL DEL DADO */
     .dice-panel {
       display: flex;
       flex-direction: column;
@@ -40,11 +45,11 @@
       gap: 20px;
       text-align: center;
       width: 250px;
-      background: #ffffff90;
+      background: #ffffffaa;
       padding: 30px;
       border-radius: 20px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-      position: sticky; 
+      position: sticky;
       top: 40px;
       z-index: 20;
     }
@@ -68,36 +73,24 @@
     .roll-button:hover { background: var(--btn-hover); transform: translateY(-3px); }
     .roll-button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-    /* CONTENEDOR DEL TABLERO CORREGIDO */
-    .board-wrapper {
-      /* Le decimos al navegador exactamente cuánto mide visualmente (1920*0.25 y 4000*0.25) */
-      width: 480px; 
-      height: 1000px;
-      position: relative;
-    }
-
+    /* NUEVO TABLERO INTELIGENTE (RESPONSIVO) */
     .board-container {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 1920px;  
-      height: 4000px; 
-      transform: scale(0.25); /* Lo encogemos visualmente */
-      transform-origin: top left;
+      position: relative;
+      width: 100%;
+      max-width: 600px; /* Tamaño máximo para que se vea bien en PC */
+      /* Esto mantiene la proporción exacta de tu lienzo (1920x4000) sin importar la pantalla */
+      aspect-ratio: 1920 / 4000; 
       background: url('index.png') no-repeat top left; 
-      background-size: 100% 100%;
+      background-size: cover;
+      border-radius: 10px;
     }
 
-    /* LA FICHA (CONEJO) CORREGIDA */
+    /* EL CONEJO SE ADAPTA AL TABLERO */
     .token {
       position: absolute;
-      /* Aumentamos el tamaño a 400px para que al escalarse a 0.25 se vea de 100px reales */
-      width: 400px; 
-      height: 400px;
+      width: 10%; /* El conejo siempre medirá el 10% del ancho del tablero */
+      aspect-ratio: 1 / 1; /* Mantiene al conejo cuadrado y perfecto */
       background: url('conejo.png') no-repeat center/contain;
-      background-color: transparent;
-      border: none;
-      box-shadow: none;
       transform: translate(-50%, -50%); 
       transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
       z-index: 10;
@@ -106,25 +99,25 @@
 </head>
 <body>
 
-  <!-- Panel del Dado -->
-  <div class="dice-panel">
-    <h1>¡Lanza el dado!</h1>
-    <div class="stage" id="stage">
-      <div class="die" id="die"></div>
+  <div class="game-container">
+    <!-- Panel del Dado -->
+    <div class="dice-panel">
+      <h1>¡Lanza el dado!</h1>
+      <div class="stage" id="stage">
+        <div class="die" id="die"></div>
+      </div>
+      <button class="roll-button" id="roll" type="button">Lanzar dado</button>
+      <div id="result" style="font-size: 1.2rem; margin-top: 10px;"><strong>Resultado:</strong> <span id="res-num">-</span></div>
     </div>
-    <button class="roll-button" id="roll" type="button">Lanzar dado</button>
-    <div id="result" style="font-size: 1.2rem; margin-top: 10px;"><strong>Resultado:</strong> <span id="res-num">-</span></div>
-  </div>
 
-  <!-- Tablero -->
-  <div class="board-wrapper">
+    <!-- Tablero -->
     <div class="board-container" id="board">
-      <!-- El conejo -->
       <div class="token" id="token"></div>
     </div>
   </div>
 
   <script>
+    // 1. GENERAR EL DADO
     const die = document.getElementById('die');
     const patterns = { 1:[4], 2:[0,8], 3:[0,4,8], 4:[0,2,6,8], 5:[0,2,4,6,8], 6:[0,2,3,5,6,8] };
     for (let n=1; n<=6; n++) {
@@ -138,7 +131,7 @@
       die.appendChild(face);
     }
 
-    // TUS COORDENADAS
+    // 2. TUS COORDENADAS EXACTAS
     const pathCoordinates = [
       { x: 1028, y: 3256 },
       { x: 1298, y: 3123 },
@@ -157,21 +150,33 @@
     let currentPosition = 0;
     const token = document.getElementById('token');
 
-    // Ubica la ficha en la posición inicial (casilla 1)
-    token.style.left = pathCoordinates[0].x + 'px';
-    token.style.top = pathCoordinates[0].y + 'px';
+    // ESTA FUNCIÓN CONVIERTE TUS COORDENADAS EN PORCENTAJES MÁGICAMENTE
+    function moveTokenToIndex(index) {
+      const boardWidth = 1920;
+      const boardHeight = 4000;
+      
+      // Regla de tres simple para saber qué porcentaje de la imagen es X y Y
+      const xPercent = (pathCoordinates[index].x / boardWidth) * 100;
+      const yPercent = (pathCoordinates[index].y / boardHeight) * 100;
 
+      token.style.left = xPercent + '%';
+      token.style.top = yPercent + '%';
+    }
+
+    // Ubica al conejo en la casilla de salida al iniciar
+    moveTokenToIndex(0);
+
+    // 3. LÓGICA DEL JUEGO
     const angles = {1:[0,0], 2:[270,0], 3:[0,270], 4:[0,90], 5:[90,0], 6:[0,180]};
     let last = 1, xTurns = 0, yTurns = 0, rolling = false;
 
     function roll() {
       if (rolling) return;
       
-      // Reinicio si ya llegó al final
+      // Si el conejo llegó al final, reiniciamos el tablero
       if (currentPosition >= pathCoordinates.length - 1) {
         currentPosition = 0;
-        token.style.left = pathCoordinates[0].x + 'px';
-        token.style.top = pathCoordinates[0].y + 'px';
+        moveTokenToIndex(0);
         document.getElementById('res-num').innerText = "-";
         document.getElementById('roll').innerText = "Lanzar dado";
         return; 
@@ -180,6 +185,7 @@
       rolling = true; 
       document.getElementById('roll').disabled = true;
 
+      // Calcular número aleatorio para el dado
       let next = Math.floor(Math.random() * 5) + 1;
       if (next >= last) next++;
       const [x, y] = angles[next];
@@ -200,8 +206,8 @@
             currentPosition = pathCoordinates.length - 1; 
           }
           
-          token.style.left = pathCoordinates[currentPosition].x + 'px';
-          token.style.top = pathCoordinates[currentPosition].y + 'px';
+          // Mover al conejo a su nueva posición
+          moveTokenToIndex(currentPosition);
 
           if (currentPosition === pathCoordinates.length - 1) {
              document.getElementById('roll').innerText = "Volver a jugar";
