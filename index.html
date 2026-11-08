@@ -9,9 +9,9 @@
   
   <style>
     :root {
-      --btn-color: #BD95E8;
-      --btn-hover: #a87cd5;
-      --text-color: #292d31;
+      --btn-color: #c0e0d0;
+      --btn-hover: #99b3a6;
+      --text-color: #837456;
       --dice-size: 120px;
       --half: calc(var(--dice-size) / 2);
     }
@@ -22,20 +22,20 @@
       width: 100vw;
       height: 100vh;
       box-sizing: border-box;
-      background-color: transparent; /* Perfecto para InDesign */
+      background-color: transparent; 
       color: var(--text-color);
       font-family: 'Quicksand', Arial, Helvetica, sans-serif;
-      
-      /* Dado a la izquierda, tablero a la derecha */
       display: flex;
       flex-direction: row; 
       align-items: center;
       justify-content: flex-start;
       gap: 30px;
-      overflow: hidden; /* Evita que salgan barras de scroll */
+      overflow: hidden; 
     }
 
-    /* PANEL DEL DADO (Izquierda, tamaño fijo) */
+    /* =========================================
+       PANEL DEL DADO Y TABLERO (IGUAL QUE ANTES)
+       ========================================= */
     .dice-panel {
       flex: 0 0 250px;
       display: flex;
@@ -43,7 +43,7 @@
       align-items: center;
       gap: 20px;
       text-align: center;
-      background: rgba(255, 255, 255, 0.85); 
+      background: #fff3e4; 
       padding: 30px;
       border-radius: 20px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.05);
@@ -69,7 +69,6 @@
     .roll-button:hover { background: var(--btn-hover); transform: translateY(-3px); }
     .roll-button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-    /* CONTENEDOR DEL TABLERO (Derecha) */
     .board-wrapper {
       flex: 1;
       display: flex;
@@ -78,36 +77,99 @@
       height: 100%;
     }
 
-    /* Envoltura que abraza a la imagen para que el conejo calcule sus porcentajes perfecto */
     .board-inner {
       position: relative;
       display: inline-block;
     }
 
-    /* Imagen real (CERO DEFORMACIÓN) */
     .board-img {
       display: block;
       max-width: 100%;
-      max-height: 90vh; /* No deja que se salga de la pantalla */
+      max-height: 90vh; 
       width: auto;
       height: auto;
       object-fit: contain;
     }
 
-    /* EL CONEJO (Más grande) */
     .token {
       position: absolute;
-      width: 18%; /* ¡Conejo mucho más grande! */
+      width: 18%; 
       aspect-ratio: 1 / 1;
       background: url('conejo.png') no-repeat center/contain;
       transform: translate(-50%, -50%); 
       transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
       z-index: 10;
     }
+
+    /* =========================================
+       NUEVO: ESTILOS DE LAS VENTANAS DE PREGUNTAS
+       ========================================= */
+    #modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0, 0, 0, 0.6); /* Fondo oscuro transparente */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 100; /* Siempre por encima de todo */
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    #modal-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal-box {
+      background: #fff3e3;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+      display: none; /* Se ocultan por defecto */
+      flex-direction: column;
+      gap: 20px;
+    }
+    .modal-box.active {
+      display: flex; /* Se muestran cuando tienen la clase active */
+    }
+
+    /* Estilos de la pregunta */
+    .question-title { font-size: 1.5rem; font-weight: 700; margin: 0; }
+    .options-container { display: flex; flex-direction: column; gap: 12px; }
+    
+    .option-btn {
+      background: white;
+      border: 2px solid var(--btn-color);
+      color: var(--text-color);
+      font-family: 'Quicksand', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      padding: 12px 20px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .option-btn:hover { background: var(--btn-color); color: white; }
+
+    /* Estilos de la imagen de respuesta */
+    .feedback-img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 15px;
+      object-fit: contain;
+      max-height: 350px;
+    }
   </style>
 </head>
 <body>
 
+  <!-- ===============================
+       EL JUEGO NORMAL
+       =============================== -->
   <div class="dice-panel">
     <h1>¡Lanza el dado!</h1>
     <div class="stage" id="stage">
@@ -119,10 +181,31 @@
 
   <div class="board-wrapper">
     <div class="board-inner" id="board">
-      <!-- Ahora usamos una etiqueta img, jamás se deformará -->
       <img src="index.png" class="board-img" alt="Tablero">
       <div class="token" id="token"></div>
     </div>
+  </div>
+
+  <!-- ===============================
+       NUEVO: CAPA DE LAS TARJETAS (MODAL)
+       =============================== -->
+  <div id="modal-overlay">
+    
+    <!-- Tarjeta de Pregunta -->
+    <div id="question-modal" class="modal-box">
+      <h2 id="question-text" class="question-title">¿Pregunta de ejemplo?</h2>
+      <div id="options-container" class="options-container">
+        <!-- Los botones de opciones se inyectarán aquí con JavaScript -->
+      </div>
+    </div>
+
+    <!-- Tarjeta de Resultado (Correcto/Incorrecto) -->
+    <div id="feedback-modal" class="modal-box">
+      <!-- Aquí cargaremos tarjeta_Correcto.png o tarjeta_Incorrecto.png -->
+      <img id="feedback-image" src="" alt="Resultado" class="feedback-img">
+      <button id="btn-continue" class="roll-button">Continuar jugando</button>
+    </div>
+
   </div>
 
   <script>
@@ -140,42 +223,156 @@
       die.appendChild(face);
     }
 
-    // 2. TUS COORDENADAS ORIGINALES
+    // ==========================================
+    // 2. DATOS DEL TABLERO Y LAS PREGUNTAS
+    // ==========================================
     const pathCoordinates = [
-      { x: 1028, y: 3256 }, { x: 1298, y: 3123 }, { x: 1765, y: 3082 },
-      { x: 1517, y: 2861 }, { x: 1017, y: 3025 }, { x: 717,  y: 2828 },
-      { x: 1085, y: 2639 }, { x: 1594, y: 2725 }, { x: 1802, y: 2558 },
-      { x: 1523, y: 2442 }, { x: 1103, y: 2453 }, { x: 755,  y: 2443 }
+      { x: 1028, y: 3256 }, // 0: Inicio (Sin pregunta)
+      { x: 1298, y: 3123 }, // 1
+      { x: 1765, y: 3082 }, // 2
+      { x: 1517, y: 2861 }, // 3
+      { x: 1017, y: 3025 }, // 4
+      { x: 717,  y: 2828 }, // 5
+      { x: 1085, y: 2639 }, // 6
+      { x: 1594, y: 2725 }, // 7
+      { x: 1802, y: 2558 }, // 8
+      { x: 1523, y: 2442 }, // 9
+      { x: 1103, y: 2453 }, // 10
+      { x: 755,  y: 2443 }  // 11: Final (Puede no tener pregunta o ser un mensaje de victoria)
+    ];
+
+    // AQUÍ CONFIGURAS TUS PREGUNTAS. 
+    // Si una casilla no tiene pregunta, simplemente escribe "null".
+    // "correctIndex" es qué opción es la correcta (0 es la primera, 1 es la segunda, etc.)
+    const questionsData = [
+      null, // Casilla 0: Inicio, sin pregunta
+      { 
+        pregunta: "¿Qué color se obtiene mezclando azul y amarillo?", 
+        opciones: ["Verde", "Naranja", "Morado"], 
+        correctIndex: 0 
+      }, 
+      // Casilla 1
+      { 
+        pregunta: "¿Cuál es la tipografía que estamos usando en este juego?", 
+        opciones: ["Arial", "Quicksand", "Times New Roman"], 
+        correctIndex: 1 
+      }, // Casilla 2
+      null, // Casilla 3: Sin pregunta (descanso)
+      { 
+        pregunta: "¿Qué herramienta sirve para recortar fondos en Photoshop?", 
+        opciones: ["Pincel", "Texto", "Pluma"], 
+        correctIndex: 2 
+      }, // Casilla 4
+      null, // Casilla 5
+      null, // Casilla 6
+      null, // Casilla 7
+      null, // Casilla 8
+      null, // Casilla 9
+      null, // Casilla 10
+      null  // Casilla 11 (Final)
     ];
 
     let currentPosition = 0;
     const token = document.getElementById('token');
+    const rollButton = document.getElementById('roll');
 
-    // ==========================================
-    // MATEMÁTICAS AUTOMÁTICAS (No toques a menos que esté descentrado)
-    // ==========================================
-    // Estos números restan el espacio transparente que recortaste al guardar la imagen.
-    // Si el conejo aterriza un poquito a la izquierda/derecha, sube o baja el 633.
-    // Si el conejo aterriza muy arriba/abajo, sube o baja el 2349.
     const ajusteX = 633; 
     const ajusteY = 2349; 
-    
-    // El tamaño real al que se exportó tu index.png
     const anchoImagen = 1254;
     const altoImagen = 1000;
 
     function updateTokenPosition() {
-      // Traducimos tus coordenadas gigantes al tamaño del tablero exportado
       const xPercent = ((pathCoordinates[currentPosition].x - ajusteX) / anchoImagen) * 100;
       const yPercent = ((pathCoordinates[currentPosition].y - ajusteY) / altoImagen) * 100;
-
       token.style.left = xPercent + '%';
       token.style.top = yPercent + '%';
     }
     
     updateTokenPosition(); // Ubicar conejo al iniciar
 
-    // 3. LÓGICA DEL JUEGO
+    // ==========================================
+    // 3. LÓGICA DE LAS TARJETAS (MODALES)
+    // ==========================================
+    const modalOverlay = document.getElementById('modal-overlay');
+    const questionModal = document.getElementById('question-modal');
+    const feedbackModal = document.getElementById('feedback-modal');
+    const questionText = document.getElementById('question-text');
+    const optionsContainer = document.getElementById('options-container');
+    const feedbackImage = document.getElementById('feedback-image');
+    const btnContinue = document.getElementById('btn-continue');
+
+    function checkCurrentSquare() {
+      const currentQuestion = questionsData[currentPosition];
+      
+      // Si hay una pregunta en esta casilla, la mostramos
+      if (currentQuestion) {
+        showQuestion(currentQuestion);
+      } else {
+        // Si no hay pregunta (es null), liberamos el botón para que siga jugando
+        rolling = false;
+        rollButton.disabled = false;
+        
+        // Si llegó al final, cambiar texto del botón
+        if (currentPosition === pathCoordinates.length - 1) {
+             rollButton.innerText = "Volver a jugar";
+        }
+      }
+    }
+
+    function showQuestion(qData) {
+      // 1. Limpiar opciones anteriores
+      optionsContainer.innerHTML = '';
+      
+      // 2. Colocar el texto de la pregunta
+      questionText.innerText = qData.pregunta;
+
+      // 3. Crear los botones de opciones
+      qData.opciones.forEach((opcionText, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerText = opcionText;
+        
+        // Cuando hacen clic en una opción
+        btn.onclick = () => {
+          if (index === qData.correctIndex) {
+            showFeedback('tarjeta_Correcto.png');
+          } else {
+            showFeedback('tarjeta_Incorrecto.png');
+          }
+        };
+        optionsContainer.appendChild(btn);
+      });
+
+      // 4. Mostrar la ventana de pregunta
+      questionModal.classList.add('active');
+      feedbackModal.classList.remove('active');
+      modalOverlay.classList.add('active');
+    }
+
+    function showFeedback(imageName) {
+      // Cambiamos a la ventana de resultado
+      questionModal.classList.remove('active');
+      feedbackModal.classList.add('active');
+      
+      // Cargamos tu diseño de tarjeta
+      feedbackImage.src = imageName;
+    }
+
+    // Botón continuar cierra todo y libera el dado
+    btnContinue.onclick = () => {
+      modalOverlay.classList.remove('active');
+      rolling = false;
+      rollButton.disabled = false;
+      
+      if (currentPosition === pathCoordinates.length - 1) {
+         rollButton.innerText = "Volver a jugar";
+      }
+    };
+
+
+    // ==========================================
+    // 4. LÓGICA DEL JUEGO Y LANZAMIENTO
+    // ==========================================
     const angles = {1:[0,0], 2:[270,0], 3:[0,270], 4:[0,90], 5:[90,0], 6:[0,180]};
     let last = 1, xTurns = 0, yTurns = 0, rolling = false;
 
@@ -186,12 +383,12 @@
         currentPosition = 0;
         updateTokenPosition();
         document.getElementById('res-num').innerText = "-";
-        document.getElementById('roll').innerText = "Lanzar dado";
+        rollButton.innerText = "Lanzar dado";
         return; 
       }
 
       rolling = true; 
-      document.getElementById('roll').disabled = true;
+      rollButton.disabled = true;
 
       let next = Math.floor(Math.random() * 5) + 1;
       if (next >= last) next++;
@@ -215,19 +412,17 @@
           
           updateTokenPosition();
 
-          if (currentPosition === pathCoordinates.length - 1) {
-             document.getElementById('roll').innerText = "Volver a jugar";
-          }
-
-          rolling = false;
-          document.getElementById('roll').disabled = false;
+          // Esperamos a que el conejo termine de moverse (0.6 segundos) para mostrar la pregunta
+          setTimeout(() => {
+            checkCurrentSquare();
+          }, 600);
         }
       };
       
       die.addEventListener('transitionend', onTransition);
     }
 
-    document.getElementById('roll').addEventListener('click', roll);
+    rollButton.addEventListener('click', roll);
     document.getElementById('stage').addEventListener('click', roll);
   </script>
 </body>
