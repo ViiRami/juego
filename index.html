@@ -9,11 +9,10 @@
   
   <style>
     :root {
-      /* PALETA DE COLORES */
+      /* PALETA DE COLORES (Interfaz) */
       --bg-color: #fff3e3;
       --btn-color: #BD95E8;
       --btn-hover: #a87cd5;
-      --token-color: #eab2b6;
       --text-color: #292d31;
       
       --dice-size: 120px;
@@ -26,7 +25,7 @@
       display: flex;
       flex-wrap: wrap; 
       justify-content: center;
-      align-items: flex-start; /* Alinea los elementos arriba */
+      align-items: flex-start; 
       gap: 40px;
       padding: 40px 24px;
       background-color: var(--bg-color);
@@ -47,7 +46,7 @@
       padding: 30px;
       border-radius: 20px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-      position: sticky; /* Hace que el dado te siga al hacer scroll hacia abajo */
+      position: sticky; 
       top: 40px;
       z-index: 20;
     }
@@ -73,29 +72,29 @@
 
     /* CONTENEDOR DEL TABLERO */
     .board-wrapper {
-      /* Escala visual: 0.25 hace que el tablero gigante se vea a 1/4 de su tamaño para que quepa en pantalla. Puedes cambiarlo a 0.3 o 0.2 si lo necesitas. */
+      /* Escala visual para que el tablero gigante se vea bien en pantalla */
       transform: scale(0.25); 
       transform-origin: top center;
-      margin-bottom: -3000px; /* Compensa el espacio sobrante que deja el escalado */
+      margin-bottom: -3000px; 
     }
 
     .board-container {
       position: relative;
-      width: 1920px;  /* EL ANCHO EXACTO DE TU LIENZO */
-      height: 4000px; /* EL ALTO EXACTO DE TU LIENZO */
-      background: url('image_b3ed66.png') no-repeat top left; 
+      width: 1920px;  
+      height: 4000px; 
+      background: url('index.png') no-repeat top left; 
       background-size: 100% 100%;
     }
 
-    /* LA FICHA */
+    /* LA FICHA (CONEJO) */
     .token {
       position: absolute;
-      width: 80px; 
-      height: 80px;
-      background-color: var(--token-color);
-      border: 6px solid #fff;
-      border-radius: 50%;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+      width: 150px; /* Tamaño del conejo */
+      height: 150px;
+      background: url('conejo.png') no-repeat center/contain;
+      background-color: transparent;
+      border: none;
+      box-shadow: none;
       transform: translate(-50%, -50%); 
       transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
       z-index: 10;
@@ -133,7 +132,7 @@
       die.appendChild(face);
     }
 
-    // TUS COORDENADAS (De la 1 a la 12)
+    // COORDENADAS EXACTAS
     const pathCoordinates = [
       { x: 1028, y: 3256 },
       { x: 1298, y: 3123 },
