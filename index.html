@@ -9,7 +9,6 @@
   
   <style>
     :root {
-      /* PALETA DE COLORES (Interfaz) */
       --bg-color: #fff3e3;
       --btn-color: #BD95E8;
       --btn-hover: #a87cd5;
@@ -23,15 +22,14 @@
       margin: 0;
       min-height: 100svh;
       display: flex;
-      flex-wrap: wrap; 
+      flex-wrap: wrap; /* Permite que se acomoden lado a lado o arriba/abajo en celulares */
       justify-content: center;
       align-items: flex-start; 
-      gap: 40px;
+      gap: 60px; /* Separación clara entre el dado y el tablero */
       padding: 40px 24px;
       background-color: var(--bg-color);
       color: var(--text-color);
       font-family: 'Quicksand', Arial, Helvetica, sans-serif;
-      overflow-x: hidden;
     }
 
     /* CONTENEDOR DEL DADO */
@@ -70,27 +68,32 @@
     .roll-button:hover { background: var(--btn-hover); transform: translateY(-3px); }
     .roll-button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-    /* CONTENEDOR DEL TABLERO */
+    /* CONTENEDOR DEL TABLERO CORREGIDO */
     .board-wrapper {
-      /* Escala visual para que el tablero gigante se vea bien en pantalla */
-      transform: scale(0.25); 
-      transform-origin: top center;
-      margin-bottom: -3000px; 
+      /* Le decimos al navegador exactamente cuánto mide visualmente (1920*0.25 y 4000*0.25) */
+      width: 480px; 
+      height: 1000px;
+      position: relative;
     }
 
     .board-container {
-      position: relative;
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 1920px;  
       height: 4000px; 
+      transform: scale(0.25); /* Lo encogemos visualmente */
+      transform-origin: top left;
       background: url('index.png') no-repeat top left; 
       background-size: 100% 100%;
     }
 
-    /* LA FICHA (CONEJO) */
+    /* LA FICHA (CONEJO) CORREGIDA */
     .token {
       position: absolute;
-      width: 150px; /* Tamaño del conejo */
-      height: 150px;
+      /* Aumentamos el tamaño a 400px para que al escalarse a 0.25 se vea de 100px reales */
+      width: 400px; 
+      height: 400px;
       background: url('conejo.png') no-repeat center/contain;
       background-color: transparent;
       border: none;
@@ -103,6 +106,7 @@
 </head>
 <body>
 
+  <!-- Panel del Dado -->
   <div class="dice-panel">
     <h1>¡Lanza el dado!</h1>
     <div class="stage" id="stage">
@@ -112,8 +116,10 @@
     <div id="result" style="font-size: 1.2rem; margin-top: 10px;"><strong>Resultado:</strong> <span id="res-num">-</span></div>
   </div>
 
+  <!-- Tablero -->
   <div class="board-wrapper">
     <div class="board-container" id="board">
+      <!-- El conejo -->
       <div class="token" id="token"></div>
     </div>
   </div>
@@ -132,7 +138,7 @@
       die.appendChild(face);
     }
 
-    // COORDENADAS EXACTAS
+    // TUS COORDENADAS
     const pathCoordinates = [
       { x: 1028, y: 3256 },
       { x: 1298, y: 3123 },
