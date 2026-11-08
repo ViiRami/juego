@@ -307,13 +307,71 @@
       { x: 1523, y: 2442 }, { x: 1103, y: 2453 }, { x: 755,  y: 2443 } 
     ];
 
-    const questionsData = [
-      null, 
-      { pregunta: "¿Qué color se obtiene mezclando azul y amarillo?", opciones: ["Verde", "Naranja", "Morado"], correctIndex: 0 }, 
-      { pregunta: "¿Cuál es la tipografía que estamos usando en este juego?", opciones: ["Arial", "Quicksand", "Times New Roman"], correctIndex: 1 }, 
-      null, 
-      { pregunta: "¿Qué herramienta sirve para recortar fondos en Photoshop?", opciones: ["Pincel", "Texto", "Pluma"], correctIndex: 2 }, 
-      null, null, null, null, null, null, null  
+const questionsData = [
+      null, // Casilla 0: (Punto de partida) No pasa nada.
+      
+      // Casilla 1: 
+      { 
+        pregunta: "¿Qué características hacen que los peces sean útiles para la investigación?", 
+        opciones: ["Son animales de gran tamaño, vidas muy largas y costosos de mantener.", "Son pequeños, tienen vidas cortas, ponen huevos transparentes y ayudan a estudiar la regeneración cardíaca.", "Su sistema circulatorio es idéntico al de los mamíferos terrestres y no se pueden reproducir en laboratorios."], 
+        correctIndex: 1 // 1 significa que la respuesta correcta es la segunda opción ("Libre de crueldad..."). Si fuera la primera, pondrías 0.
+      }, 
+      
+      // Casilla 2:
+      { 
+        pregunta: "¿Qué prohíbe estrictamente la Ley 2047 de 2020 en Colombia respecto a los productos cosméticos?", 
+        opciones: ["La prohibición total de fabricar cualquier tipo de medicamento o vacuna utilizando animales.", "Únicamente la comercialización de productos importados desde el continente africano.", "Realizar ensayos en animales de productos cosméticos terminados, ingredientes o mezclas, así como importar, fabricar o comercializarlos."], 
+        correctIndex: 2 // 0 significa que la respuesta correcta es la primera ("Leaping Bunny").
+      }, 
+      
+      { 
+        pregunta: "¿Cuáles son algunos de los sellos oficiales internacionalmente reconocidos que debes buscar?", 
+        opciones: ["Peta, Leaping Bunny, Cruelty Free Europe y el sello de Te Protejo.", "Cualquier logotipo que tenga la silueta de un perro o un gato impreso en color negro.", "El sello de calidad ISO 9001, marcas de origen nacional y etiquetas de precio ecológico."], 
+        correctIndex: 0 // 0 significa que la respuesta correcta es la primera ("Leaping Bunny").
+      }, 
+      
+      // Casilla 4:
+      { 
+        pregunta: "Dentro de las alternativas éticas que reemplazan el uso de animales, ¿a qué hace referencia el método In Silico?", 
+        opciones: ["A modelos computacionales y simulaciones por software.", "A cultivos celulares humanos en placas de laboratorio.", "A un ensayo visual realizado en membranas corioalantoideas."], 
+        correctIndex: 0 // 2 significa que la respuesta correcta es la tercera ("Opción C").
+      }, 
+      
+     { 
+        pregunta: "Para verificar de forma segura si una marca de cosméticos o cuidado personal es realmente cruelty-free:", 
+        opciones: ["Confiar únicamente en la publicidad de televisión y redes sociales.", "Revisar que el empaque sea de color verde pastel.", "Utilizar buscadores oficiales como Te Protejo o Peta."], 
+        correctIndex: 2 // 2 significa que la respuesta correcta es la tercera ("Opción C").
+      },  // Casilla 5
+    { 
+        pregunta: "¿A qué tipo de prueba de laboratorio son expuestos los peces?", 
+        opciones: ["Pruebas de toxicidad ambiental.", "Pruebas de resistencia textil.", "Ensayos exclusivos de nutrición marina."], 
+        correctIndex: 0 // 2 significa que la respuesta correcta es la tercera ("Opción C").
+      },  // Casilla 6
+      { 
+        pregunta: "¿Qué implican el procedimiento de modificación genética e inyección en embriones?", 
+        opciones: ["Modificar la dieta diaria de los peces en estanques comerciales.", "Alterar el material genético e introducir sustancias o vectores en las etapas embrionarias tempranas.", "Evaluar únicamente el crecimiento físico de los peces en agua dulce."], 
+        correctIndex: 1 // 2 significa que la respuesta correcta es la tercera ("Opción C").
+      },  // Casilla 7
+    { 
+        pregunta: "¿Qué evalúan generalmente los procedimientos de toxicidad subcrónica y crónica en animales?", 
+        opciones: ["Los efectos adversos provocados por la exposición prolongada o repetida a una sustancia durante gran parte de su ciclo de vida.", "La velocidad con la que pueden correr en superficies planas.", "La cantidad de alimento que consumen al día sin alterar su peso."], 
+        correctIndex: 0 // 2 significa que la respuesta correcta es la tercera ("Opción C").
+      },  // Casilla 8
+      { 
+        pregunta: "¿Por qué es importante compartir información cruelty-free?", 
+        opciones: ["Reemplazar por completo la necesidad de tener sellos oficiales en los empaques.", "Vender productos de maquillaje importado de forma directa.", "Fomentar la educación, concientizar a más jóvenes sobre la Ley 2047 y promover el uso de alternativas libres de crueldad."], 
+        correctIndex: 2 // 2 significa que la respuesta correcta es la tercera ("Opción C").
+      },  // Casilla 9
+      { 
+        pregunta: "¿Qué aspecto fundamental estableció la Ley 84 de 1989 en Colombia?", 
+        opciones: ["La creación de multas exclusivamente para zoológicos y circos ambulantes.", "Que los animales pasaron a tener en todo el territorio nacional especial protección contra el sufrimiento y el dolor causados por el hombre.", "La prohibición inmediata de importar cosméticos de Europa y Asia."], 
+        correctIndex: 1 // 2 significa que la respuesta correcta es la tercera ("Opción C").
+      },  // Casilla 10
+     { 
+        pregunta: "¿Qué cambio histórico introdujo la Ley 1774 de 2016?", 
+        opciones: ["Los reconoció legalmente como seres sintientes, estableciendo penas de prisión para castigar los actos de crueldad y maltrato.", "Autorizó el uso de animales en laboratorios de cosmética bajo supervisión policial.", "Los catalogó estrictamente como bienes muebles de propiedad familiar."], 
+        correctIndex: 0 // 2 significa que la respuesta correcta es la tercera ("Opción C").
+      },   // Casilla 11 (Final)
     ];
 
     let currentPosition = 0;
