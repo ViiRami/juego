@@ -5,15 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Tablero Interactivo</title>
   
-  <!-- ✍️ TIPOGRAFÍA PASO 1: Si quieres usar otra fuente distinta a Quicksand (ej. Roboto, Montserrat), 
-        debes cambiar este enlace de Google Fonts por el de tu nueva fuente. -->
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
   
   <style>
     :root {
-      /* 🎨 COLORES PRINCIPALES DEL JUEGO */
-      --btn-color: #c0e0d0;   
-      --btn-hover: #99b3a6;   
+      --btn-color: #fff3e4;   
+      --btn-hover: #a89e89;   
       --text-color: #837456;  
       
       --dice-size: 120px;
@@ -22,9 +19,9 @@
 
     body {
       margin: 0;
-      padding: 20px;
-      width: 100vw;
-      height: 100vh;
+      padding: 0;
+      width: 1920px;
+      height: 865px;
       box-sizing: border-box;
       
       background-color: transparent; 
@@ -35,15 +32,16 @@
       flex-direction: row; 
       align-items: center;
       justify-content: flex-start;
-      gap: 5px; 
+      gap: 30px; 
       overflow: hidden; 
+      padding-left: 50px;
     }
 
     /* =========================================
-       PANEL DEL DADO 
-       ========================================= */
+        PANEL DEL DADO 
+        ========================================= */
     .dice-panel {
-      flex: 0 0 250px;
+      flex: 0 0 280px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -59,8 +57,8 @@
     h1 { margin: 0; font-size: 1.8rem; font-weight: 700; }
     
     /* =========================================
-       EL DADO (CARAS Y PUNTOS)
-       ========================================= */
+        EL DADO (CARAS Y PUNTOS)
+        ========================================= */
     .stage { height: 180px; width: 180px; display: grid; place-items: center; perspective: 900px; cursor: pointer; }
     .die { position: relative; width: var(--dice-size); height: var(--dice-size); transform-style: preserve-3d; transition: transform 1.5s cubic-bezier(.14,.78,.21,1); }
     
@@ -73,7 +71,7 @@
       grid-template-columns: repeat(3, 1fr); 
       padding: 17%; 
       background: #778c78; 
-      box-shadow: inset -5px -5px 10px #aaa9a926; 
+      box-shadow: inset -5px -5px 10px #a89e89; 
       backface-visibility: hidden; 
     }
     
@@ -94,8 +92,8 @@
     }
     
     /* =========================================
-       BOTÓN "LANZAR DADO"
-       ========================================= */
+        BOTÓN "LANZAR DADO"
+        ========================================= */
     .roll-button { 
       background: var(--btn-color); 
       color: #837456; 
@@ -109,9 +107,10 @@
     .board-wrapper {
       flex: 1;
       display: flex;
-      justify-content: center;
+      justify-content: flex-end;
       align-items: center;
       height: 100%;
+      padding-right: 50px;
     }
 
     .board-inner {
@@ -122,7 +121,7 @@
     .board-img {
       display: block;
       max-width: 100%;
-      max-height: 90vh; 
+      max-height: 800px; 
       width: auto;
       height: auto;
       object-fit: contain;
@@ -130,7 +129,7 @@
 
     .token {
       position: absolute;
-      width: 18%; 
+      width: 20%; /* Aumentado un 10% adicional respecto al 18% anterior */
       aspect-ratio: 1 / 1;
       background: url('conejo.png') no-repeat center/contain;
       transform: translate(-50%, -50%); 
@@ -139,15 +138,12 @@
     }
 
     /* =========================================
-       VENTANAS EMERGENTES (MODALES DE PREGUNTAS)
-       ========================================= */
+        VENTANAS EMERGENTES (MODALES DE PREGUNTAS)
+        ========================================= */
     #modal-overlay {
       position: fixed;
-      top: 0; left: 0; width: 100vw; height: 100vh;
-      
-      /* El fondo que cubre todo ahora es un degradado dinámico controlado por JS */
+      top: 0; left: 0; width: 1920px; height: 865px;
       background: radial-gradient(circle at center, #fff3e3 0%, #778c78 80%);
-      
       display: flex;
       justify-content: center;
       align-items: center;
@@ -162,9 +158,7 @@
     }
 
     .modal-box {
-      /* Fondo sólido del recuadro de la pregunta (controlado por cada pregunta en JS) */
       background: #fff3e4; 
-      
       padding: 40px;
       border-radius: 20px;
       box-shadow: 0 15px 40px rgba(0,0,0,0.2);
@@ -183,12 +177,10 @@
       font-size: 1.5rem; 
       font-weight: 700; 
       margin: 0; 
-      /* Color del título independiente configurado vía JS */
     } 
 
     .options-container { display: flex; flex-direction: column; gap: 12px; }
     
-    /* BOTONES DE RESPUESTA (OPCIONES A, B, C) */
     .option-btn {
       background: #9bac92; 
       border: 2px solid var(--btn-color);
@@ -218,9 +210,6 @@
 </head>
 <body>
 
-  <!-- ===============================
-       EL JUEGO NORMAL
-       =============================== -->
   <div class="dice-panel">
     <h1>¡Lanza el dado!</h1>
     <div class="stage" id="stage">
@@ -232,14 +221,11 @@
 
   <div class="board-wrapper">
     <div class="board-inner" id="board">
-      <img src="index.png" class="board-img" alt="Tablero">
+      <img src="tablero.png" class="board-img" alt="Tablero">
       <div class="token" id="token"></div>
     </div>
   </div>
 
-  <!-- ===============================
-       CAPA DE LAS TARJETAS (MODAL)
-       =============================== -->
   <div id="modal-overlay">
     
     <div id="question-modal" class="modal-box">
@@ -256,7 +242,6 @@
   </div>
 
   <script>
-    // 1. GENERAR EL DADO
     const die = document.getElementById('die');
     const patterns = { 1:[4], 2:[0,8], 3:[0,4,8], 4:[0,2,6,8], 5:[0,2,4,6,8], 6:[0,2,3,5,6,8] };
     for (let n=1; n<=6; n++) {
@@ -270,15 +255,6 @@
       die.appendChild(face);
     }
 
-    // ==========================================
-    // 2. DATOS DEL TABLERO Y LAS PREGUNTAS
-    // Aquí puedes cambiar de forma independiente:
-    // - overlayBg: Degradado de fondo que cubre toda la pantalla
-    // - modalBg: Color SÓLIDO del recuadro de la pregunta
-    // - titleColor: Color del título de la pregunta
-    // - textColor: Color del texto de las opciones y general del cuadro
-    // - btnBg: Color de fondo de los botones de opción
-    // ==========================================
     const pathCoordinates = [
       { x: 1028, y: 3256 }, { x: 1298, y: 3123 }, { x: 1765, y: 3082 },
       { x: 1517, y: 2861 }, { x: 1017, y: 3025 }, { x: 717,  y: 2828 },
@@ -287,21 +263,17 @@
     ];
 
     const questionsData = [
-      null, // Casilla 0: (Punto de partida) No pasa nada.
-      
-      // Casilla 1: 
+      null, 
       { 
         pregunta: "¿Qué características hacen que los peces sean útiles para la investigación?", 
         opciones: ["Son animales de gran tamaño, vidas muy largas y costosos de mantener.", "Son pequeños, tienen vidas cortas, ponen huevos transparentes y ayudan a estudiar la regeneración cardíaca.", "Su sistema circulatorio es idéntico al de los mamíferos terrestres y no se pueden reproducir en laboratorios."], 
         correctIndex: 1,
-        overlayBg: "radial-gradient(circle at center, #fff3e3 0%, #c0e0d0 80%)", // 🎨 Degradado de fondo general
-        modalBg: "#c0e0d0",       // 🎨 Color SÓLIDO del cuadro modal
-        titleColor: "#837456",    // 🎨 Color del título de la pregunta
-        textColor: "#837456",     // 🎨 Color del texto de las opciones
-        btnBg: "#99b3a6"          // 🎨 Color de fondo de los botones
+        overlayBg: "radial-gradient(circle at center, #fff3e3 0%, #c0e0d0 80%)",
+        modalBg: "#c0e0d0",       
+        titleColor: "#837456",    
+        textColor: "#837456",     
+        btnBg: "#99b3a6"          
       }, 
-      
-      // Casilla 2:
       { 
         pregunta: "¿Qué prohíbe estrictamente la Ley 2047 de 2020 en Colombia respecto a los productos cosméticos?", 
         opciones: ["La prohibición total de fabricar cualquier tipo de medicamento o vacuna utilizando animales.", "Únicamente la comercialización de productos importados desde el continente africano.", "Realizar ensayos en animales de productos cosméticos terminados, ingredientes o mezclas, así como importar, fabricar o comercializarlos."], 
@@ -312,7 +284,6 @@
         textColor: "#fff3e4",
         btnBg: "#5f7868"
       }, 
-      
       { 
         pregunta: "¿Cuáles son algunos de los sellos oficiales internacionalmente reconocidos que debes buscar?", 
         opciones: ["Peta, Leaping Bunny, Cruelty Free Europe y el sello de Te Protejo.", "Cualquier logotipo que tenga la silueta de un perro o un gato impreso en color negro.", "El sello de calidad ISO 9001, marcas de origen nacional y etiquetas de precio ecológico."], 
@@ -323,8 +294,6 @@
         textColor: "#837556",
         btnBg: "#d4a1a5"
       }, 
-      
-      // Casilla 4:
       { 
         pregunta: "Dentro de las alternativas éticas que reemplazan el uso de animales, ¿a qué hace referencia el método In Silico?", 
         opciones: ["A modelos computacionales y simulaciones por software.", "A cultivos celulares humanos en placas de laboratorio.", "A un ensayo visual realizado en membranas corioalantoideas."], 
@@ -335,17 +304,16 @@
         textColor: "#fff3e4",
         btnBg: "#9c9078"
       }, 
-      
       { 
         pregunta: "Para verificar de forma segura si una marca de cosméticos o cuidado personal es realmente cruelty-free:", 
         opciones: ["Confiar únicamente en la publicidad de televisión y redes sociales.", "Revisar que el empaque sea de color verde pastel.", "Utilizar buscadores oficiales como Te Protejo o Peta."], 
         correctIndex: 2,
-        overlayBg: "radial-gradient(circle at center, #fff3e3 0%, #c0e0d0 80%)", // 🎨 Degradado de fondo general
-        modalBg: "#c0e0d0",       // 🎨 Color SÓLIDO del cuadro modal
-        titleColor: "#837456",    // 🎨 Color del título de la pregunta
-        textColor: "#837456",     // 🎨 Color del texto de las opciones
-        btnBg: "#99b3a6" 
-      }, // Casilla 5
+        overlayBg: "radial-gradient(circle at center, #fff3e3 0%, #c0e0d0 80%)", 
+        modalBg: "#c0e0d0",       
+        titleColor: "#837456",    
+        textColor: "#837456",     
+        btnBg: "#99b3a6"  
+      }, 
       { 
         pregunta: "¿A qué tipo de prueba de laboratorio son expuestos los peces?", 
         opciones: ["Pruebas de toxicidad ambiental.", "Pruebas de resistencia textil.", "Ensayos exclusivos de nutrición marina."], 
@@ -355,17 +323,17 @@
         titleColor: "#fff3e4",
         textColor: "#fff3e4",
         btnBg: "#5f7868"
-      }, // Casilla 6
+      }, 
       { 
         pregunta: "¿Qué implican el procedimiento de modificación genética e inyección en embriones?", 
         opciones: ["Modificar la dieta diaria de los peces en estanques comerciales.", "Alterar el material genético e introducir sustancias o vectores en las etapas embrionarias tempranas.", "Evaluar únicamente el crecimiento físico de los peces en agua dulce."], 
         correctIndex: 1,
-       overlayBg: "radial-gradient(circle at center, #fce4d6 0%, #ebb3b7 80%)",
+        overlayBg: "radial-gradient(circle at center, #fce4d6 0%, #ebb3b7 80%)",
         modalBg: "#ebb3b7",
         titleColor: "#837556",
         textColor: "#837556",
         btnBg: "#d4a1a5"
-      }, // Casilla 7
+      }, 
       { 
         pregunta: "¿Qué evalúan generalmente los procedimientos de toxicidad subcrónica y crónica en animales?", 
         opciones: ["Los efectos adversos provocados por la exposición prolongada o repetida a una sustancia durante gran parte de su ciclo de vida.", "La velocidad con la que pueden correr en superficies planas.", "La cantidad de alimento que consumen al día sin alterar su peso."], 
@@ -375,17 +343,17 @@
         titleColor: "#837556",
         textColor: "#837556",
         btnBg: "#afbda8"
-      }, // Casilla 8
+      }, 
       { 
         pregunta: "¿Por qué es importante compartir información cruelty-free?", 
         opciones: ["Reemplazar por completo la necesidad de tener sellos oficiales en los empaques.", "Vender productos de maquillaje importado de forma directa.", "Fomentar la educación, concientizar a más jóvenes sobre la Ley 2047 y promover el uso de alternativas libres de crueldad."], 
         correctIndex: 2,
-       overlayBg: "radial-gradient(circle at center, #fff3e3 0%, #c0e0d0 80%)", // 🎨 Degradado de fondo general
-        modalBg: "#c0e0d0",       // 🎨 Color SÓLIDO del cuadro modal
-        titleColor: "#837456",    // 🎨 Color del título de la pregunta
-        textColor: "#837456",     // 🎨 Color del texto de las opciones
+        overlayBg: "radial-gradient(circle at center, #fff3e3 0%, #c0e0d0 80%)", 
+        modalBg: "#c0e0d0",       
+        titleColor: "#837456",    
+        textColor: "#837456",     
         btnBg: "#99b3a6"  
-      }, // Casilla 9
+      }, 
       { 
         pregunta: "¿Qué aspecto fundamental estableció la Ley 84 de 1989 en Colombia?", 
         opciones: ["La creación de multas exclusivamente para zoológicos y circos ambulantes.", "Que los animales pasaron a tener en todo el territorio nacional especial protección contra el sufrimiento y el dolor causados por el hombre.", "La prohibición inmediata de importar cosméticos de Europa y Asia."], 
@@ -395,7 +363,7 @@
         titleColor: "#fff3e4",
         textColor: "#fff3e4",
         btnBg: "#5f7868"
-      }, // Casilla 10
+      }, 
       { 
         pregunta: "¿Qué cambio histórico introdujo la Ley 1774 de 2016?", 
         opciones: ["Los reconoció legalmente como seres sintientes, estableciendo penas de prisión para castigar los actos de crueldad y maltrato.", "Autorizó el uso de animales en laboratorios de cosmética bajo supervisión policial.", "Los catalogó estrictamente como bienes muebles de propiedad familiar."], 
@@ -405,10 +373,11 @@
         titleColor: "#837556",
         textColor: "#837556",
         btnBg: "#d4a1a5"
-      },   // Casilla 11 (Final)
+      },   
     ];
 
     let currentPosition = 0;
+    let previousPosition = 0; // Variable para almacenar la casilla anterior en caso de fallo
     const token = document.getElementById('token');
     const rollButton = document.getElementById('roll');
 
@@ -426,9 +395,6 @@
     
     updateTokenPosition();
 
-    // ==========================================
-    // 3. LÓGICA DE LAS TARJETAS (MODALES)
-    // ==========================================
     const modalOverlay = document.getElementById('modal-overlay');
     const questionModal = document.getElementById('question-modal');
     const feedbackModal = document.getElementById('feedback-modal');
@@ -436,6 +402,8 @@
     const optionsContainer = document.getElementById('options-container');
     const feedbackImage = document.getElementById('feedback-image');
     const btnContinue = document.getElementById('btn-continue');
+
+    let answeredCorrectly = true; // Control de respuesta para saber si debe retroceder
 
     function checkCurrentSquare() {
       const currentQuestion = questionsData[currentPosition];
@@ -453,7 +421,6 @@
       optionsContainer.innerHTML = '';
       questionText.innerText = qData.pregunta;
 
-      // Aplicar colores y fondos personalizados por pregunta
       const currentOverlayBg = qData.overlayBg || 'radial-gradient(circle at center, #fff3e3 0%, #778c78 80%)';
       const currentModalBg = qData.modalBg || '#fff3e4';
       const currentTitleColor = qData.titleColor || '#6d5b3d';
@@ -473,8 +440,10 @@
         
         btn.onclick = () => {
           if (index === qData.correctIndex) {
+            answeredCorrectly = true;
             showFeedback('tarjeta_Correcto.png', currentOverlayBg, currentModalBg, currentTextColor);
           } else {
+            answeredCorrectly = false;
             showFeedback('tarjeta_Incorrecto.png', currentOverlayBg, currentModalBg, currentTextColor);
           }
         };
@@ -497,14 +466,18 @@
 
     btnContinue.onclick = () => {
       modalOverlay.classList.remove('active');
+      
+      // Si falló la pregunta, devolvemos la posición actual a la anterior
+      if (!answeredCorrectly) {
+        currentPosition = previousPosition;
+        updateTokenPosition();
+      }
+
       rolling = false;
       rollButton.disabled = false;
       if (currentPosition === pathCoordinates.length - 1) { rollButton.innerText = "Volver a jugar"; }
     };
 
-    // ==========================================
-    // 4. LÓGICA DEL JUEGO Y LANZAMIENTO
-    // ==========================================
     const angles = {1:[0,0], 2:[270,0], 3:[0,270], 4:[0,90], 5:[90,0], 6:[0,180]};
     let last = 1, xTurns = 0, yTurns = 0, rolling = false;
 
@@ -513,6 +486,7 @@
       
       if (currentPosition >= pathCoordinates.length - 1) {
         currentPosition = 0;
+        previousPosition = 0;
         updateTokenPosition();
         document.getElementById('res-num').innerText = "-";
         rollButton.innerText = "Lanzar dado";
@@ -521,6 +495,9 @@
 
       rolling = true; 
       rollButton.disabled = true;
+
+      // Guardamos la posición antes de avanzar por si el usuario falla
+      previousPosition = currentPosition;
 
       let next = Math.floor(Math.random() * 5) + 1;
       if (next >= last) next++;
