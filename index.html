@@ -127,14 +127,31 @@
       object-fit: contain;
     }
 
+    /* La ficha que realiza el recorrido empieza siendo Conejo_h.png */
     .token {
       position: absolute;
-      width: 20%; /* Aumentado un 10% adicional respecto al 18% anterior */
+      width: 20%; 
       aspect-ratio: 1 / 1;
-      background: url('conejo.png') no-repeat center/contain;
+      background: url('Conejo_h.png') no-repeat center/contain;
       transform: translate(-50%, -50%); 
       transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
       z-index: 10;
+    }
+
+    /* Al llegar a la meta, la ficha viajera cambia su fondo a conejo.png */
+    .token.at-finish {
+      background: url('conejo.png') no-repeat center/contain;
+    }
+
+    /* El segundo conejo (conejo.png) que está esperando fijo en la última casilla */
+    .token-waiting {
+      position: absolute;
+      width: 20%;
+      aspect-ratio: 1 / 1;
+      background: url('conejo.png') no-repeat center/contain;
+      transform: translate(-50%, -50%);
+      z-index: 9;
+      pointer-events: none;
     }
 
     /* =========================================
@@ -222,6 +239,9 @@
   <div class="board-wrapper">
     <div class="board-inner" id="board">
       <img src="tablero.png" class="board-img" alt="Tablero">
+      <!-- El conejo fijo esperando en la última casilla -->
+      <div class="token-waiting" id="token-waiting"></div>
+      <!-- La ficha viajera (Conejo_h) que hace el recorrido -->
       <div class="token" id="token"></div>
     </div>
   </div>
@@ -377,8 +397,9 @@
     ];
 
     let currentPosition = 0;
-    let previousPosition = 0; // Variable para almacenar la casilla anterior en caso de fallo
+    let previousPosition = 0; 
     const token = document.getElementById('token');
+    const tokenWaiting = document.getElementById('token-waiting');
     const rollButton = document.getElementById('roll');
 
     const ajusteX = 633; 
@@ -386,11 +407,32 @@
     const anchoImagen = 1254;
     const altoImagen = 1000;
 
+    // Colocar el conejo que espera en la última casilla desde el inicio (desplazado a un lado)
+    function initWaitingToken() {
+      const lastIndex = pathCoordinates.length - 1;
+      const xPercent = ((pathCoordinates[lastIndex].x - ajusteX) / anchoImagen) * 100;
+      const yPercent = ((pathCoordinates[lastIndex].y - ajusteY) / altoImagen) * 100;
+      
+      tokenWaiting.style.left = (xPercent + 8) + '%';
+      tokenWaiting.style.top = yPercent + '%';
+    }
+
+    initWaitingToken();
+
     function updateTokenPosition() {
       const xPercent = ((pathCoordinates[currentPosition].x - ajusteX) / anchoImagen) * 100;
       const yPercent = ((pathCoordinates[currentPosition].y - ajusteY) / altoImagen) * 100;
+      
       token.style.left = xPercent + '%';
       token.style.top = yPercent + '%';
+
+      // Si el viajero llega a la última casilla, cambia a conejo.png
+      const isLastSquare = (currentPosition === pathCoordinates.length - 1);
+      if (isLastSquare) {
+        token.classList.add('at-finish');
+      } else {
+        token.classList.remove('at-finish');
+      }
     }
     
     updateTokenPosition();
@@ -403,7 +445,7 @@
     const feedbackImage = document.getElementById('feedback-image');
     const btnContinue = document.getElementById('btn-continue');
 
-    let answeredCorrectly = true; // Control de respuesta para saber si debe retroceder
+    let answeredCorrectly = true; 
 
     function checkCurrentSquare() {
       const currentQuestion = questionsData[currentPosition];
@@ -467,7 +509,7 @@
     btnContinue.onclick = () => {
       modalOverlay.classList.remove('active');
       
-      // Si falló la pregunta, devolvemos la posición actual a la anterior
+      // Si respondió incorrectamente, la ficha se devuelve a la casilla anterior
       if (!answeredCorrectly) {
         currentPosition = previousPosition;
         updateTokenPosition();
@@ -496,7 +538,7 @@
       rolling = true; 
       rollButton.disabled = true;
 
-      // Guardamos la posición antes de avanzar por si el usuario falla
+      // Guardamos la posición actual antes de avanzar por si se equivoca
       previousPosition = currentPosition;
 
       let next = Math.floor(Math.random() * 5) + 1;
