@@ -127,14 +127,26 @@
       object-fit: contain;
     }
 
+    /* La ficha principal que viaja por el tablero es Conejo_h.png */
     .token {
       position: absolute;
-      width: 20%; /* Aumentado un 10% adicional respecto al 18% anterior */
+      width: 20%; 
       aspect-ratio: 1 / 1;
-      background: url('conejo.png') no-repeat center/contain;
+      background: url('Conejo_h.png') no-repeat center/contain;
       transform: translate(-50%, -50%); 
       transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
       z-index: 10;
+    }
+
+    /* El segundo conejo (conejo.png) está esperando fijo en la última casilla */
+    .token-waiting {
+      position: absolute;
+      width: 20%;
+      aspect-ratio: 1 / 1;
+      background: url('conejo.png') no-repeat center/contain;
+      transform: translate(-50%, -50%);
+      z-index: 9;
+      pointer-events: none;
     }
 
     /* =========================================
@@ -222,6 +234,9 @@
   <div class="board-wrapper">
     <div class="board-inner" id="board">
       <img src="tablero.png" class="board-img" alt="Tablero">
+      <!-- El conejo que espera fijo en la última casilla -->
+      <div class="token-waiting" id="token-waiting"></div>
+      <!-- La ficha viajera (Conejo_h) -->
       <div class="token" id="token"></div>
     </div>
   </div>
@@ -346,7 +361,7 @@
       }, 
       { 
         pregunta: "¿Por qué es importante compartir información cruelty-free?", 
-        opciones: ["Reemplazar por completo la necesidad de tener sellos oficiales en los empaques.", "Vender productos de maquillaje importado de forma directa.", "Fomentar la educación, concientizar a más jóvenes sobre la Ley 2047 y promover el uso de alternativas libres de crueldad."], 
+        opciones: ["Reemplazar por completo la necesidad de tener sellos oficiales en los empaques.", "Vender productos de maquillaje importado de forma directa.", "Fomentar la educación, concientizar a más jóvenes sobre la Ley 2047 y promover el suso de alternativas libres de crueldad."], 
         correctIndex: 2,
         overlayBg: "radial-gradient(circle at center, #fff3e3 0%, #c0e0d0 80%)", 
         modalBg: "#c0e0d0",       
@@ -377,8 +392,9 @@
     ];
 
     let currentPosition = 0;
-    let previousPosition = 0; // Variable para almacenar la casilla anterior en caso de fallo
+    let previousPosition = 0; 
     const token = document.getElementById('token');
+    const tokenWaiting = document.getElementById('token-waiting');
     const rollButton = document.getElementById('roll');
 
     const ajusteX = 633; 
@@ -386,9 +402,23 @@
     const anchoImagen = 1254;
     const altoImagen = 1000;
 
+    // Colocar fijo al conejo que espera en la última casilla desde el inicio
+    function initWaitingToken() {
+      const lastIndex = pathCoordinates.length - 1;
+      const xPercent = ((pathCoordinates[lastIndex].x - ajusteX) / anchoImagen) * 100;
+      const yPercent = ((pathCoordinates[lastIndex].y - ajusteY) / altoImagen) * 100;
+      
+      // Se posiciona desplazado un poco a la derecha para que queden lado a lado
+      tokenWaiting.style.left = (xPercent + 8) + '%';
+      tokenWaiting.style.top = yPercent + '%';
+    }
+
+    initWaitingToken();
+
     function updateTokenPosition() {
       const xPercent = ((pathCoordinates[currentPosition].x - ajusteX) / anchoImagen) * 100;
       const yPercent = ((pathCoordinates[currentPosition].y - ajusteY) / altoImagen) * 100;
+      
       token.style.left = xPercent + '%';
       token.style.top = yPercent + '%';
     }
@@ -403,7 +433,7 @@
     const feedbackImage = document.getElementById('feedback-image');
     const btnContinue = document.getElementById('btn-continue');
 
-    let answeredCorrectly = true; // Control de respuesta para saber si debe retroceder
+    let answeredCorrectly = true; 
 
     function checkCurrentSquare() {
       const currentQuestion = questionsData[currentPosition];
@@ -467,7 +497,6 @@
     btnContinue.onclick = () => {
       modalOverlay.classList.remove('active');
       
-      // Si falló la pregunta, devolvemos la posición actual a la anterior
       if (!answeredCorrectly) {
         currentPosition = previousPosition;
         updateTokenPosition();
@@ -496,7 +525,6 @@
       rolling = true; 
       rollButton.disabled = true;
 
-      // Guardamos la posición antes de avanzar por si el usuario falla
       previousPosition = currentPosition;
 
       let next = Math.floor(Math.random() * 5) + 1;
