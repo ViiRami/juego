@@ -127,7 +127,7 @@
       object-fit: contain;
     }
 
-    /* La ficha principal que viaja por el tablero es Conejo_h.png */
+    /* La ficha que realiza el recorrido empieza siendo Conejo_h.png */
     .token {
       position: absolute;
       width: 20%; 
@@ -138,7 +138,12 @@
       z-index: 10;
     }
 
-    /* El segundo conejo (conejo.png) está esperando fijo en la última casilla */
+    /* Al llegar a la meta, la ficha viajera cambia su fondo a conejo.png */
+    .token.at-finish {
+      background: url('conejo.png') no-repeat center/contain;
+    }
+
+    /* El segundo conejo (conejo.png) que está esperando fijo en la última casilla */
     .token-waiting {
       position: absolute;
       width: 20%;
@@ -234,9 +239,9 @@
   <div class="board-wrapper">
     <div class="board-inner" id="board">
       <img src="tablero.png" class="board-img" alt="Tablero">
-      <!-- El conejo que espera fijo en la última casilla -->
+      <!-- El conejo fijo esperando en la última casilla -->
       <div class="token-waiting" id="token-waiting"></div>
-      <!-- La ficha viajera (Conejo_h) -->
+      <!-- La ficha viajera (Conejo_h) que hace el recorrido -->
       <div class="token" id="token"></div>
     </div>
   </div>
@@ -361,7 +366,7 @@
       }, 
       { 
         pregunta: "¿Por qué es importante compartir información cruelty-free?", 
-        opciones: ["Reemplazar por completo la necesidad de tener sellos oficiales en los empaques.", "Vender productos de maquillaje importado de forma directa.", "Fomentar la educación, concientizar a más jóvenes sobre la Ley 2047 y promover el suso de alternativas libres de crueldad."], 
+        opciones: ["Reemplazar por completo la necesidad de tener sellos oficiales en los empaques.", "Vender productos de maquillaje importado de forma directa.", "Fomentar la educación, concientizar a más jóvenes sobre la Ley 2047 y promover el uso de alternativas libres de crueldad."], 
         correctIndex: 2,
         overlayBg: "radial-gradient(circle at center, #fff3e3 0%, #c0e0d0 80%)", 
         modalBg: "#c0e0d0",       
@@ -402,13 +407,12 @@
     const anchoImagen = 1254;
     const altoImagen = 1000;
 
-    // Colocar fijo al conejo que espera en la última casilla desde el inicio
+    // Colocar el conejo que espera en la última casilla desde el inicio (desplazado a un lado)
     function initWaitingToken() {
       const lastIndex = pathCoordinates.length - 1;
       const xPercent = ((pathCoordinates[lastIndex].x - ajusteX) / anchoImagen) * 100;
       const yPercent = ((pathCoordinates[lastIndex].y - ajusteY) / altoImagen) * 100;
       
-      // Se posiciona desplazado un poco a la derecha para que queden lado a lado
       tokenWaiting.style.left = (xPercent + 8) + '%';
       tokenWaiting.style.top = yPercent + '%';
     }
@@ -421,6 +425,14 @@
       
       token.style.left = xPercent + '%';
       token.style.top = yPercent + '%';
+
+      // Si el viajero llega a la última casilla, cambia a conejo.png
+      const isLastSquare = (currentPosition === pathCoordinates.length - 1);
+      if (isLastSquare) {
+        token.classList.add('at-finish');
+      } else {
+        token.classList.remove('at-finish');
+      }
     }
     
     updateTokenPosition();
@@ -497,6 +509,7 @@
     btnContinue.onclick = () => {
       modalOverlay.classList.remove('active');
       
+      // Si respondió incorrectamente, la ficha se devuelve a la casilla anterior
       if (!answeredCorrectly) {
         currentPosition = previousPosition;
         updateTokenPosition();
@@ -525,6 +538,7 @@
       rolling = true; 
       rollButton.disabled = true;
 
+      // Guardamos la posición actual antes de avanzar por si se equivoca
       previousPosition = currentPosition;
 
       let next = Math.floor(Math.random() * 5) + 1;
